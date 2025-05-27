@@ -2,10 +2,11 @@ import numpy as np
 import imutils
 import cv2
 from cv2 import imread
+import os
 
 camera = cv2.VideoCapture(0)
 green = (0, 255, 0)
-
+rgb = (0, 0, 0)
 
 #1200, 900
 
@@ -23,7 +24,17 @@ while True:
     key = cv2.waitKey(1) & 0xFF
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):
+        rgb = frame[300, 300]
         break
 
 camera.release()
 cv2.destroyAllWindows()
+
+print("Cor obtida: ", rgb)
+cor = str(rgb)
+with open("Cod.PICTEC/Tiago/rgb.txt", "w") as arquivo:
+    arquivo.write(cor)
+
+with open("Cod.PICTEC/Tiago/rgb.txt", "r") as arquivo:
+    texto = arquivo.read()
+    print(texto)
