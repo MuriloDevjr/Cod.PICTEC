@@ -2,10 +2,45 @@ import cv2
 import numpy as np
 from collections import Counter
 import os
+from skimage.metrics import structural_similarity
 
-def cor_mais_frequente(imagem, reduzir=10):
+def similaridade(img1,img2):
+   
+    #for i in range(2,20):
+    img1 = recorte
+    img2 = cv2.imread('amarelo.png')
+
+    imagem1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
+    
+    #imagem1 = cv2.resize(imagem1, (imagem1.shape[1] // i, imagem1.shape[0] // i))
+
+    imagem2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
+    
+    #    imagem2 = cv2.resize(imagem2, (imagem2.shape[1] // i, imagem2.shape[0] // i))
+    
+    c1 = imagem1[1:10,1:10]
+    c2 = imagem2[1:10,1:10]
+    cv2.imwrite('img1.png', c1)
+    cv2.imwrite('img2.png', c2)
+
+    (score) = structural_similarity(c1, c2,  win_size=7, channel_axis=-1)
+    print("Image Similarity: {:.4f}%".format(score * 100))
+     
+    return score
+  
+
+def cor_mais_frequente(imagem, reduzir=1):
+    
+    img_calib = cv2.imread('amarelo.png')
+    
+    similaridade(img_calib,reduzir)
+   
     imagem_rgb = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
+    
     imagem_rgb = cv2.resize(imagem_rgb, (imagem_rgb.shape[1] // reduzir, imagem_rgb.shape[0] // reduzir))
+    
+    
+
     pixels = imagem_rgb.reshape(-1, 3)
     counter = Counter(tuple(pixel) for pixel in pixels)
     cor_mais_comum = counter.most_common(1)[0]  # ((R, G, B), ocorrências)
@@ -42,7 +77,7 @@ while True:
     x, y, w, h = r
     cv2.destroyAllWindows()
 
-    recorte = frame[int(y):int(y+h), int(x):int(x+w)];
+    recorte = frame[int(y):int(y+h), int(x):int(x+w)]
 
     if w == 0 or h == 0:
         print("Seleção vazia. Encerrando.")
