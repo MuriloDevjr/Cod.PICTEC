@@ -7,8 +7,8 @@ from skimage.metrics import structural_similarity
 def similaridade(img1,img2):
    
     #for i in range(2,20):
-    img1 =cv2.imread('files/retang26.jpg')
-    img2 = cv2.imread('amarelo.png')
+    img1 = recorte
+    img2 = cv2.imread(f'imagemReferencia/ref{indice2}.jpg')
 
     imagem1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
     
@@ -25,18 +25,19 @@ def similaridade(img1,img2):
 
     (score) = structural_similarity(c1, c2,  win_size=7, channel_axis=-1)
     print("Image Similarity: {:.4f}%".format(score * 100))
-    
+     
     return score
   
 
 def cor_mais_frequente(imagem, reduzir=10):
     
-    img_calib = cv2.imread('amarelo.png')
+    img_calib = cv2.imread(f'imagemReferencia/Ref{indice}.jpg')
     
-    similaridade(imagem,img_calib,1,reduzir)
+    similaridade(img_calib,reduzir)
    
-    imagem_rgb = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
-    
+    #imagem_rgb = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
+    imagem_rgb = imagem
+
     imagem_rgb = cv2.resize(imagem_rgb, (imagem_rgb.shape[1] // reduzir, imagem_rgb.shape[0] // reduzir))
     
     
@@ -47,18 +48,43 @@ def cor_mais_frequente(imagem, reduzir=10):
     return cor_mais_comum
 
 # Diretório para salvar arquivos
-PASTA_SAIDA = "files"
+PASTA_SAIDA = "imagemAnalise"
+PASTA_REFERENCIA = "imagemReferencia"
 os.makedirs(PASTA_SAIDA, exist_ok=True)
+os.makedirs(PASTA_REFERENCIA, exist_ok=True)
 
 #Iniciar a câmera
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(1)
 if not cam.isOpened():
-    print("Erro ao acessar a câmera.")
+    print("Erro ao acessar a câmera.") 
     exit()
 
 indice = len([arq for arq in os.listdir(PASTA_SAIDA) if arq.endswith(".jpg")]) + 1
+indice2 = len([arq for arq in os.listdir(PASTA_REFERENCIA) if arq.endswith(".jpg")]) + 1
 
 while True:
+    while True:
+        ret, frame = cam.read()
+        if not ret:
+            print("Erro ao ler da câmera.")
+            break
+        cv2.imshow("Capturar imagem referência", frame)
+        key = cv2.waitKey(1) & 0xFF
+        # if the 'enter' key is pressed, stop the loop
+        if key == 13:
+            imagemRef = frame
+
+            r = cv2.selectROI("Selecione o retangulo com o mouse (tecle ENTER para confirmar)", imagemRef, False, False)
+            x, y, w, h = r
+            cv2.destroyAllWindows()
+
+            recorteRef = frame[int(y):int(y+h), int(x):int(x+w)]
+
+            nomeRef = os.path.join(PASTA_REFERENCIA, f"Ref{indice2}.jpg")
+            cv2.imwrite(nomeRef, recorteRef)
+            cv2.destroyAllWindows()
+
+            break
     while True:
         ret, frame = cam.read()
         if not ret:
