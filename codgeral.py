@@ -6,7 +6,7 @@ from skimage.metrics import structural_similarity
 
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
-from colormath.color_diff import delta_e_cie2000
+from color_diff import delta_e_cie2000
 
 def similaridade2 (cor1_rgb, cor2_rgb):
     # Defina as cores em formato RGB (valores de 0 a 255)
