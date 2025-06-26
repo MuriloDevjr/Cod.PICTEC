@@ -4,11 +4,43 @@ from collections import Counter
 import os
 from skimage.metrics import structural_similarity
 
-def similaridade(img1,img2):
+from colormath.color_objects import sRGBColor, LabColor
+from colormath.color_conversions import convert_color
+from colormath.color_diff import delta_e_cie2000
+
+def similaridade2 (cor1_rgb, cor2_rgb):
+    # Defina as cores em formato RGB (valores de 0 a 255)
+    #cor1_rgb = sRGBColor(255, 0, 0, is_upscaled=True)  # Vermelho
+    #cor2_rgb = sRGBColor(254, 0, 0, is_upscaled=True)  # Vermelho quase igual
+
+    # Converta para o espaço de cores Lab, que é melhor para medir diferenças perceptuais
+    cor1_lab = convert_color(cor1_rgb, LabColor)
+    cor2_lab = convert_color(cor2_rgb, LabColor)
+
+    # Calcule a diferença entre as cores
+    diferenca = delta_e_cie2000(cor1_lab, cor2_lab)
+
+    simsim = max(0,100 - diferenca)
+    print(f"A diferença entre as cores é: {simsim}")
+
+def similaridade():
    
     #for i in range(2,20):
     img1 = recorte
     img2 = cv2.imread(f'imagemReferencia/ref{indice2}.jpg')
+
+
+    cor1 = cor_mais_frequente(img1)
+    print(cor1)
+    cor1Final = sRGBColor(cor1[0][0], cor1[0][1], cor1[0][2], is_upscaled=True)
+
+    cor2 = cor_mais_frequente(img2)
+    cor2Final = sRGBColor(cor2[0][0], cor2[0][1], cor2[0][2], is_upscaled=True)
+
+    similaridade2(cor1Final, cor2Final)
+
+    
+    return 0
 
     imagem1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
     
@@ -30,9 +62,7 @@ def similaridade(img1,img2):
   
 def cor_mais_frequente(imagem, reduzir=10):
     
-    img_calib = cv2.imread(f'imagemReferencia/Ref{indice}.jpg')
-    
-    similaridade(img_calib,reduzir)
+  
    
     #imagem_rgb = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
     imagem_rgb = imagem
@@ -134,6 +164,7 @@ with open(nome_txt, "w") as f:
 print(f"[✔] Imagem salva como: {nome_imagem}")
 print(f"[✔] Dados salvos em: {nome_txt}")
 
+similaridade()
 indice += 1  # Incrementar para próxima iteração
 
 cam.release()
