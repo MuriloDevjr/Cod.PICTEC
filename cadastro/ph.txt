@@ -1,1 +1,10 @@
-5 (174,86,98)
+PH: 3
+(RGB): ((np.uint8(232), np.uint8(240), np.uint8(229)), 1)
+PH: 4
+(RGB): ((np.uint8(220), np.uint8(224), np.uint8(213)), 2)
+PH: 5
+(RGB): ((np.uint8(244), np.uint8(246), np.uint8(232)), 1)
+PH: 6
+(RGB): ((np.uint8(238), np.uint8(242), np.uint8(224)), 1)
+PH: 3
+(RGB): ((np.uint8(233), np.uint8(231), np.uint8(219)), 1)

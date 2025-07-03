@@ -8,6 +8,7 @@ from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from color_diff import delta_e_cie2000
 
+
 def similaridade2 (cor1_rgb, cor2_rgb):
     # Defina as cores em formato RGB (valores de 0 a 255)
     #cor1_rgb = sRGBColor(255, 0, 0, is_upscaled=True)  # Vermelho
@@ -77,53 +78,6 @@ def cor_mais_frequente(imagem, reduzir=10):
     return cor_mais_comum
 
 def cadastrar():
-    print("Cadastrar:")
-    # Nomes dos arquivos
-    nome_imagem = os.path.join(PASTA_SAIDA, f"retang{indice}.jpg")
-    nome_txt = os.path.join(PASTA_SAIDA, f"retang{indice}.txt")
-
-    # Salvar imagem recortada
-    cv2.imwrite(nome_imagem, recorte)
-
-    # Salvar dados no .txt
-    with open(nome_txt, "w") as f:
-        f.write(f"PH: {ph}\n")
-        f.write(f"Cor mais comum (RGB): {cor_comum}\n")
-    print(f"[✔] Imagem salva como: {nome_imagem}")
-    print(f"[✔] Dados salvos em: {nome_txt}")
-
-print("""
-1- Cadastrar;
-2- Analisar;
-0- Sair.
-""")
-selecao = int(input())
-
-if (selecao == 0):
-    exit()
-elif (selecao == 1):
-    cadastrar()
-elif (selecao == 2):
-    print("alisa meu pelo")
-else: 
-    print("ta errado ae krai")
-
-# Diretório para salvar arquivos
-PASTA_SAIDA = "imagemAnalise"
-PASTA_REFERENCIA = "imagemReferencia"
-os.makedirs(PASTA_SAIDA, exist_ok=True)
-os.makedirs(PASTA_REFERENCIA, exist_ok=True)
-
-#Iniciar a câmera
-cam = cv2.VideoCapture(0)
-if not cam.isOpened():
-    print("Erro ao acessar a câmera.") 
-    exit()
-
-indice = len([arq for arq in os.listdir(PASTA_SAIDA) if arq.endswith(".jpg")]) + 1
-indice2 = len([arq for arq in os.listdir(PASTA_REFERENCIA) if arq.endswith(".jpg")]) + 1
-
-while True:
     while True:
         ret, frame = cam.read()
         if not ret:
@@ -145,7 +99,59 @@ while True:
             cv2.imwrite(nomeRef, recorteRef)
             cv2.destroyAllWindows()
 
+            # Obter pH
+            ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
+            if not ph.strip():
+                print("Encerrando coleta.")
+                break
             break
+        
+    cor_cad = cor_mais_frequente(recorteRef)
+
+    print(type(cor_cad))
+
+    # Nomes dos arquivos
+    nome_txt = os.path.join(PASTA_REFERENCIA, f"ph.txt")
+
+    # Salvar dados no .txt
+    with open(nome_txt, "a") as f:
+        f.write(f"PH: {ph}\n")
+        f.write(f"(RGB): {cor_cad}\n")
+    print(f"[✔] Dados salvos em: {nome_txt}")
+
+# Diretório para salvar arquivos
+PASTA_SAIDA = "imagemAnalise"
+PASTA_REFERENCIA = "cadastro"
+os.makedirs(PASTA_SAIDA, exist_ok=True)
+os.makedirs(PASTA_REFERENCIA, exist_ok=True)
+
+#Iniciar a câmera
+cam = cv2.VideoCapture(0)
+if not cam.isOpened():
+    print("Erro ao acessar a câmera.") 
+    exit()
+
+indice = len([arq for arq in os.listdir(PASTA_SAIDA) if arq.endswith(".jpg")]) + 1
+indice2 = len([arq for arq in os.listdir(PASTA_REFERENCIA) if arq.endswith(".jpg")]) + 1
+
+print("""
+1- Cadastrar;
+2- Analisar;
+0- Sair.
+""")
+selecao = int(input())
+
+if (selecao == 0):
+    exit()
+elif (selecao == 1):
+    cadastrar()
+elif (selecao == 2):
+    print("alisa meu pelo")
+else: 
+    print("ta errado ae krai")
+
+
+while True:
     while True:
         ret, frame = cam.read()
         if not ret:
