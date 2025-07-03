@@ -70,8 +70,6 @@ def cor_mais_frequente(imagem, reduzir=10):
 
     imagem_rgb = cv2.resize(imagem_rgb, (imagem_rgb.shape[1] // reduzir, imagem_rgb.shape[0] // reduzir))
     
-    
-
     pixels = imagem_rgb.reshape(-1, 3)
     counter = Counter(tuple(pixel) for pixel in pixels)
     cor_mais_comum = counter.most_common(1)[0]  # ((R, G, B), ocorrências)
@@ -119,6 +117,12 @@ def cadastrar():
         f.write(f"(RGB): {cor_cad}\n")
     print(f"[✔] Dados salvos em: {nome_txt}")
 
+def editar():
+    cadastrar()
+    with open("cadastro/ph.txt", "a") as arquivo:
+        nova_entrada = input(": ")
+        arquivo.write(nova_entrada, "\n")
+        
 # Diretório para salvar arquivos
 PASTA_SAIDA = "imagemAnalise"
 PASTA_REFERENCIA = "cadastro"
@@ -137,6 +141,7 @@ indice2 = len([arq for arq in os.listdir(PASTA_REFERENCIA) if arq.endswith(".jpg
 print("""
 1- Cadastrar;
 2- Analisar;
+3- Editar;
 0- Sair.
 """)
 selecao = int(input())
@@ -147,6 +152,8 @@ elif (selecao == 1):
     cadastrar()
 elif (selecao == 2):
     print("alisa meu pelo")
+elif (selecao == 3):
+    editar()
 else: 
     print("ta errado ae krai")
 
