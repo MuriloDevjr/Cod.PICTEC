@@ -76,6 +76,38 @@ def cor_mais_frequente(imagem, reduzir=10):
     cor_mais_comum = counter.most_common(1)[0]  # ((R, G, B), ocorrências)
     return cor_mais_comum
 
+def cadastrar():
+    print("Cadastrar:")
+    # Nomes dos arquivos
+    nome_imagem = os.path.join(PASTA_SAIDA, f"retang{indice}.jpg")
+    nome_txt = os.path.join(PASTA_SAIDA, f"retang{indice}.txt")
+
+    # Salvar imagem recortada
+    cv2.imwrite(nome_imagem, recorte)
+
+    # Salvar dados no .txt
+    with open(nome_txt, "w") as f:
+        f.write(f"PH: {ph}\n")
+        f.write(f"Cor mais comum (RGB): {cor_comum}\n")
+    print(f"[✔] Imagem salva como: {nome_imagem}")
+    print(f"[✔] Dados salvos em: {nome_txt}")
+
+print("""
+1- Cadastrar;
+2- Analisar;
+0- Sair.
+""")
+selecao = int(input())
+
+if (selecao == 0):
+    exit()
+elif (selecao == 1):
+    cadastrar()
+elif (selecao == 2):
+    print("alisa meu pelo")
+else: 
+    print("ta errado ae krai")
+
 # Diretório para salvar arquivos
 PASTA_SAIDA = "imagemAnalise"
 PASTA_REFERENCIA = "imagemReferencia"
@@ -83,7 +115,7 @@ os.makedirs(PASTA_SAIDA, exist_ok=True)
 os.makedirs(PASTA_REFERENCIA, exist_ok=True)
 
 #Iniciar a câmera
-cam = cv2.VideoCapture(1)
+cam = cv2.VideoCapture(0)
 if not cam.isOpened():
     print("Erro ao acessar a câmera.") 
     exit()
@@ -148,21 +180,6 @@ while True:
 
 # Obter cor mais frequente
 cor_comum, ocorrencias = cor_mais_frequente(recorte)
-
-# Nomes dos arquivos
-nome_imagem = os.path.join(PASTA_SAIDA, f"retang{indice}.jpg")
-nome_txt = os.path.join(PASTA_SAIDA, f"retang{indice}.txt")
-
-# Salvar imagem recortada
-cv2.imwrite(nome_imagem, recorte)
-
-# Salvar dados no .txt
-with open(nome_txt, "w") as f:
-    f.write(f"PH: {ph}\n")
-    f.write(f"Cor mais comum (RGB): {cor_comum}\n")
-    f.write(f"Ocorrências: {ocorrencias}\n")
-print(f"[✔] Imagem salva como: {nome_imagem}")
-print(f"[✔] Dados salvos em: {nome_txt}")
 
 similaridade()
 indice += 1  # Incrementar para próxima iteração
