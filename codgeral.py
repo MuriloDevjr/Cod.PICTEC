@@ -24,6 +24,9 @@ def similaridade2 (cor1_rgb, cor2_rgb):
     simsim = max(0,100 - diferenca)
     print(f"A diferença entre as cores é: {simsim}")
 
+def analisar():
+    print("analisar")
+
 def similaridade():
    
     #for i in range(2,20):
@@ -120,13 +123,13 @@ def cadastrar():
     print(f"[✔] Dados salvos em: {nome_txt}")
 
 # Diretório para salvar arquivos
-PASTA_SAIDA = "imagemAnalise"
+PASTA_SAIDA = "analise.txt"
 PASTA_REFERENCIA = "cadastro"
 os.makedirs(PASTA_SAIDA, exist_ok=True)
 os.makedirs(PASTA_REFERENCIA, exist_ok=True)
 
 #Iniciar a câmera
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(1)
 if not cam.isOpened():
     print("Erro ao acessar a câmera.") 
     exit()

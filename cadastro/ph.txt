@@ -10,3 +10,5 @@ PH: 3
 (RGB): ((np.uint8(233), np.uint8(231), np.uint8(219)), 1)
 PH: 3
 (RGB): ((np.uint8(234), np.uint8(232), np.uint8(216)), 1)
+PH: 5
+(RGB): ((np.uint8(112), np.uint8(144), np.uint8(146)), 2)
