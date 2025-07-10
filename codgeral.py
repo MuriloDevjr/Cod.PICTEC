@@ -8,7 +8,6 @@ from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from color_diff import delta_e_cie2000
 
-
 def similaridade2 (cor1_rgb, cor2_rgb):
     # Defina as cores em formato RGB (valores de 0 a 255)
     #cor1_rgb = sRGBColor(255, 0, 0, is_upscaled=True)  # Vermelho
@@ -81,6 +80,9 @@ def cor_mais_frequente(imagem, reduzir=10):
     return cor_mais_comum
 
 def cadastrar():
+    cadPh = False
+    # Nomes dos arquivos
+    nome_txt = os.path.join(PASTA_REFERENCIA, f"ph.txt")
     while True:
         ret, frame = cam.read()
         if not ret:
@@ -102,12 +104,16 @@ def cadastrar():
             cv2.imwrite(nomeRef, recorteRef)
             cv2.destroyAllWindows()
 
-            # Obter pH
-            ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
-            if not ph.strip():
-                print("Encerrando coleta.")
-                break
-            break
+            while (cadPh == False):   
+                # Obter pH
+                ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
+                if not ph.strip():
+                    print("Encerrando coleta.")
+                    break
+                with open(nome_txt, "r") as f:
+                    conteudo = f.read()
+                print(conteudo)
+                cadPh = True
         
     cor_cad = cor_mais_frequente(recorteRef)
 
