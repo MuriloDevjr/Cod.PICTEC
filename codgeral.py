@@ -112,7 +112,7 @@ def cadastrar():
                     break
                 with open(nome_txt, "r") as f:
                     conteudo = f.read()
-                print(conteudo)
+                print(conteudo[1])
                 cadPh = True
         
     cor_cad = cor_mais_frequente(recorteRef)
