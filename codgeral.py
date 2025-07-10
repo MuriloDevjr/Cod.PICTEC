@@ -8,7 +8,6 @@ from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from color_diff import delta_e_cie2000
 
-
 def similaridade2 (cor1_rgb, cor2_rgb):
     # Defina as cores em formato RGB (valores de 0 a 255)
     #cor1_rgb = sRGBColor(255, 0, 0, is_upscaled=True)  # Vermelho
@@ -23,6 +22,9 @@ def similaridade2 (cor1_rgb, cor2_rgb):
 
     simsim = max(0,100 - diferenca)
     print(f"A diferença entre as cores é: {simsim}")
+
+def analisar():
+    print("analisar")
 
 def similaridade():
    
@@ -70,12 +72,17 @@ def cor_mais_frequente(imagem, reduzir=10):
 
     imagem_rgb = cv2.resize(imagem_rgb, (imagem_rgb.shape[1] // reduzir, imagem_rgb.shape[0] // reduzir))
     
+    
+
     pixels = imagem_rgb.reshape(-1, 3)
     counter = Counter(tuple(pixel) for pixel in pixels)
     cor_mais_comum = counter.most_common(1)[0]  # ((R, G, B), ocorrências)
     return cor_mais_comum
 
 def cadastrar():
+    cadPh = False
+    # Nomes dos arquivos
+    nome_txt = os.path.join(PASTA_REFERENCIA, f"ph.txt")
     while True:
         ret, frame = cam.read()
         if not ret:
@@ -97,12 +104,16 @@ def cadastrar():
             cv2.imwrite(nomeRef, recorteRef)
             cv2.destroyAllWindows()
 
-            # Obter pH
-            ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
-            if not ph.strip():
-                print("Encerrando coleta.")
-                break
-            break
+            while (cadPh == False):   
+                # Obter pH
+                ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
+                if not ph.strip():
+                    print("Encerrando coleta.")
+                    break
+                with open(nome_txt, "r") as f:
+                    conteudo = f.read()
+                print(conteudo)
+                cadPh = True
         
     cor_cad = cor_mais_frequente(recorteRef)
 
@@ -117,14 +128,8 @@ def cadastrar():
         f.write(f"(RGB): {cor_cad}\n")
     print(f"[✔] Dados salvos em: {nome_txt}")
 
-def editar():
-    cadastrar()
-    with open("cadastro/ph.txt", "a") as arquivo:
-        nova_entrada = input(": ")
-        arquivo.write(nova_entrada, "\n")
-        
 # Diretório para salvar arquivos
-PASTA_SAIDA = "imagemAnalise"
+PASTA_SAIDA = "analise.txt"
 PASTA_REFERENCIA = "cadastro"
 os.makedirs(PASTA_SAIDA, exist_ok=True)
 os.makedirs(PASTA_REFERENCIA, exist_ok=True)
@@ -141,7 +146,6 @@ indice2 = len([arq for arq in os.listdir(PASTA_REFERENCIA) if arq.endswith(".jpg
 print("""
 1- Cadastrar;
 2- Analisar;
-3- Editar;
 0- Sair.
 """)
 selecao = int(input())
@@ -152,8 +156,6 @@ elif (selecao == 1):
     cadastrar()
 elif (selecao == 2):
     print("alisa meu pelo")
-elif (selecao == 3):
-    editar()
 else: 
     print("ta errado ae krai")
 
