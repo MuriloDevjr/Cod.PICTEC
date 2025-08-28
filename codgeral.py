@@ -30,7 +30,7 @@ def similaridade():
    
     #for i in range(2,20):
     img1 = recorte
-    img2 = cv2.imread(f'imagemReferencia/ref{indice2}.jpg')
+    img2 = cv2.imread(f'cadastro/ref{indice2}.jpg')
 
 
     cor1 = cor_mais_frequente(img1)
@@ -81,6 +81,7 @@ def cor_mais_frequente(imagem, reduzir=10):
 
 def cadastrar():
     cadPh = False
+    veri = False
     # Nomes dos arquivos
     nome_txt = os.path.join(PASTA_REFERENCIA, f"ph.txt")
     while True:
@@ -110,22 +111,33 @@ def cadastrar():
                 if not ph.strip():
                     print("Encerrando coleta.")
                     break
+
                 with open(nome_txt, "r") as f:
                     conteudo = f.read()
-                print(conteudo[1])
+                print(conteudo)
                 cadPh = True
+            break
         
     cor_cad = cor_mais_frequente(recorteRef)
 
     print(type(cor_cad))
 
     # Nomes dos arquivos
-    nome_txt = os.path.join(PASTA_REFERENCIA, f"ph.txt")
+    nome_txt = os.path.join(PASTA_REFERENCIA, "ph.txt")
 
     # Salvar dados no .txt
+    with open (nome_txt, "r") as f:
+        content = f.read()
+        if (content == f"PH: {ph}"):
+            veri = True
+
     with open(nome_txt, "a") as f:
-        f.write(f"PH: {ph}\n")
-        f.write(f"(RGB): {cor_cad}\n")
+        if (veri != True):
+            f.write(f"PH: {ph}\n")
+            f.write(f"(RGB): {cor_cad}\n")
+        else:
+            print(f"Já possui um cadastro {ph}!")
+            exit()
     print(f"[✔] Dados salvos em: {nome_txt}")
 
 # Diretório para salvar arquivos
@@ -135,69 +147,75 @@ os.makedirs(PASTA_SAIDA, exist_ok=True)
 os.makedirs(PASTA_REFERENCIA, exist_ok=True)
 
 #Iniciar a câmera
-cam = cv2.VideoCapture(1)
+cam = cv2.VideoCapture(0)
 if not cam.isOpened():
     print("Erro ao acessar a câmera.") 
     exit()
 
-indice = len([arq for arq in os.listdir(PASTA_SAIDA) if arq.endswith(".jpg")]) + 1
-indice2 = len([arq for arq in os.listdir(PASTA_REFERENCIA) if arq.endswith(".jpg")]) + 1
-
-print("""
-1- Cadastrar;
-2- Analisar;
-0- Sair.
-""")
-selecao = int(input())
-
-if (selecao == 0):
-    exit()
-elif (selecao == 1):
-    cadastrar()
-elif (selecao == 2):
-    print("alisa meu pelo")
-else: 
-    print("ta errado ae krai")
-
-
 while True:
+    indice = len([arq for arq in os.listdir(PASTA_SAIDA) if arq.endswith(".jpg")]) + 1
+    indice2 = len([arq for arq in os.listdir(PASTA_REFERENCIA) if arq.endswith(".jpg")]) + 1
+
+    print("""
+        1- Cadastrar;
+        2- Analisar;
+        3- Editar;
+
+        0- Sair.
+    """)
+    selecao = int(input())
+
+    if (selecao == 0):
+        exit()
+    elif (selecao == 1):
+        cadastrar()
+    elif (selecao == 2):
+        print("alisa meu pelo")
+    elif(selecao == 3):
+        print("muda isso ae man!")
+    else: 
+        print("ta errado ae krai")
+
+
     while True:
-        ret, frame = cam.read()
-        if not ret:
-            print("Erro ao ler da câmera.")
+        while True:
+            ret, frame = cam.read() 
+            if not ret:
+                print("Erro ao ler da câmera.")
+                break
+            cv2.imshow("Capturar imagem", frame)
+            key = cv2.waitKey(1) & 0xFF
+            # if the 'enter' key is pressed, stop the loop
+            if key == 13:
+                imagem = frame
+                cv2.destroyAllWindows()
+                break
+      
+        # Selecionar ROI
+        r = cv2.selectROI("Selecione o retangulo com o mouse (tecle ENTER para confirmar)", frame, False, False)
+        x, y, w, h = r
+        cv2.destroyAllWindows()
+
+
+        recorte = frame[int(y):int(y+h), int(x):int(x+w)]
+
+        if w == 0 or h == 0:
+            print("Seleção vazia. Encerrando.")
             break
-        cv2.imshow("Capturar imagem", frame)
-        key = cv2.waitKey(1) & 0xFF
-        # if the 'enter' key is pressed, stop the loop
-        if key == 13:
-            imagem = frame
-            cv2.destroyAllWindows()
+
+        # Obter pH
+        ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
+        if not ph.strip():
+            print("Encerrando coleta.")
             break
-        
-    # Selecionar ROI
-    r = cv2.selectROI("Selecione o retangulo com o mouse (tecle ENTER para confirmar)", frame, False, False)
-    x, y, w, h = r
-    cv2.destroyAllWindows()
-
-    recorte = frame[int(y):int(y+h), int(x):int(x+w)]
-
-    if w == 0 or h == 0:
-        print("Seleção vazia. Encerrando.")
         break
-
-    # Obter pH
-    ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
-    if not ph.strip():
-        print("Encerrando coleta.")
-        break
-    break
     
 
-# Obter cor mais frequente
-cor_comum, ocorrencias = cor_mais_frequente(recorte)
+    # Obter cor mais frequente
+    cor_comum, ocorrencias = cor_mais_frequente(recorte)
 
-similaridade()
-indice += 1  # Incrementar para próxima iteração
+    similaridade()
+    indice += 1  # Incrementar para próxima iteração
 
 cam.release()
 cv2.destroyAllWindows()
