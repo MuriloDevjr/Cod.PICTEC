@@ -10,3 +10,29 @@ PH: 3
 (RGB): ((np.uint8(233), np.uint8(231), np.uint8(219)), 1)
 PH: 3
 (RGB): ((np.uint8(234), np.uint8(232), np.uint8(216)), 1)
+PH: 5
+(RGB): ((np.uint8(112), np.uint8(144), np.uint8(146)), 2)
+PH: 8
+(RGB): ((np.uint8(181), np.uint8(190), np.uint8(179)), 1)
+PH: 2
+(RGB): ((np.uint8(248), np.uint8(255), np.uint8(248)), 5)
+PH: 3
+(RGB): ((np.uint8(208), np.uint8(204), np.uint8(198)), 2)
+PH: 3
+(RGB): ((np.uint8(248), np.uint8(255), np.uint8(248)), 9)
+PH: 3
+(RGB): ((np.uint8(225), np.uint8(222), np.uint8(211)), 1)
+PH: 3
+(RGB): ((np.uint8(199), np.uint8(201), np.uint8(191)), 1)
+PH: 3
+(RGB): ((np.uint8(208), np.uint8(210), np.uint8(211)), 1)
+PH: 3
+(RGB): ((np.uint8(192), np.uint8(197), np.uint8(189)), 1)
+PH: 3
+(RGB): ((np.uint8(210), np.uint8(214), np.uint8(204)), 1)
+PH: 3
+(RGB): ((np.uint8(27), np.uint8(32), np.uint8(8)), 1)
+PH: 3
+(RGB): ((np.uint8(0), np.uint8(119), np.uint8(180)), 2)
+PH: 5
+(RGB): ((np.uint8(218), np.uint8(217), np.uint8(216)), 1)
