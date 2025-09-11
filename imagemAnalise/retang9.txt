@@ -1,3 +1,0 @@
-PH: 5
-Cor mais comum (RGB): (np.uint8(110), np.uint8(138), np.uint8(131))
-Ocorrências: 1

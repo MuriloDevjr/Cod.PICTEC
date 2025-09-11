@@ -1,14 +1,1 @@
-PH: 3
-(RGB): ((np.uint8(232), np.uint8(240), np.uint8(229)), 1)
-PH: 4
-(RGB): ((np.uint8(220), np.uint8(224), np.uint8(213)), 2)
-PH: 5
-(RGB): ((np.uint8(244), np.uint8(246), np.uint8(232)), 1)
-PH: 6
-(RGB): ((np.uint8(238), np.uint8(242), np.uint8(224)), 1)
-PH: 3
-(RGB): ((np.uint8(233), np.uint8(231), np.uint8(219)), 1)
-PH: 3
-(RGB): ((np.uint8(234), np.uint8(232), np.uint8(216)), 1)
-PH: 5
-(RGB): ((np.uint8(112), np.uint8(144), np.uint8(146)), 2)
+PH: 1((np.uint8(243), np.uint8(249), np.uint8(248)), 2)PH: 2((np.uint8(247), np.uint8(248), np.uint8(248)), 2)PH: 3((np.uint8(247), np.uint8(248), np.uint8(248)), 6)PH: 1((np.uint8(247), np.uint8(248), np.uint8(248)), 4)PH: 2((np.uint8(247), np.uint8(248), np.uint8(248)), 3)PH: 3((np.uint8(29), np.uint8(22), np.uint8(17)), 1)PH: 10((np.uint8(11), np.uint8(8), np.uint8(13)), 1)PH: 7((np.uint8(37), np.uint8(28), np.uint8(33)), 1)PH: 7((np.uint8(5), np.uint8(6), np.uint8(6)), 1)PH: 7((np.uint8(244), np.uint8(249), np.uint8(248)), 4)PH: 6.1((np.uint8(216), np.uint8(220), np.uint8(218)), 1)PH: 9((np.uint8(187), np.uint8(187), np.uint8(191)), 1)PH: 6,1((np.uint8(180), np.uint8(182), np.uint8(177)), 3)
