@@ -60,42 +60,119 @@ def capturar_com_roi():
         return None
 
     return frame[y:y+h, x:x+w]
+def cadastrar():
+    # Abre a camera
+    cam = cv2.VideoCapture(0)
+    if not cam.isOpened():
+        print("Erro: não consegui acessar a câmera.")
+        return None
+    
+    while True:
+        ret, frame = cam.read()
+        if not ret:
+            print("Erro ao ler da câmera.")
+            break
+        cv2.imshow("Capturar imagem referência", frame)
+        key = cv2.waitKey(1) & 0xFF
+        # if the 'enter' key is pressed, stop the loop
+        if key == 13:
+            imagemRef = frame
+
+            r = cv2.selectROI("Selecione o retangulo com o mouse (tecle ENTER para confirmar)", imagemRef, False, False)
+            x, y, w, h = r
+            cv2.destroyAllWindows()
+
+            recorteRef = frame[int(y):int(y+h), int(x):int(x+w)]
+  
+            # Obter pH
+            ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
+            if not ph.strip():
+                print("Encerrando coleta.")
+                break
+
+            nomeRef = os.path.join(pasta_ref, f"{ph}.jpg")
+            cv2.imwrite(nomeRef, recorteRef)
+            cv2.destroyAllWindows()
+            break
+        
+    cor_cad = cor_mais_frequente(recorteRef)
+
+    print(type(cor_cad))
 
 # ---------------- MAIN ----------------
-
-# 📸 Capturar ROI da câmera
-roi = capturar_com_roi()
-if roi is None:
-    exit()
-
-cor_ref = cor_mais_frequente(roi)
-print(f"🎨 Cor capturada: {cor_ref}")
-
-# 📂 Pasta com imagens de referência
-pasta_ref = "cadAmonia"
-
-melhor_sim = -1
-melhor_img = None
-
-# 🔍 Percorrer imagens na pasta
-for arquivo in os.listdir(pasta_ref):
-    if arquivo.lower().endswith((".jpg", ".png", ".jpeg")):
-        caminho = os.path.join(pasta_ref, arquivo)
-        img = cv2.imread(caminho)
-        if img is None:
-            continue
-
-        cor_img = cor_mais_frequente(img)
-        similaridade, diferenca = comparar_cores(cor_ref, cor_img)
-
-        print(f"{arquivo} -> Similaridade: {similaridade}% | ΔE: {diferenca}")
-
-        if similaridade > melhor_sim:
-            melhor_sim = similaridade
-            melhor_img = arquivo
-
-# Resultado final
-if melhor_img:
-    print(f"\n✅ A imagem mais similar é: {melhor_img} ({melhor_sim}%)")
-else:
-    print("Nenhuma imagem encontrada na pasta.")
+while True:
+    print("""
+    1- Cadastrar;
+    2- Analisar;
+    
+    0- Sair.
+    """)
+    selecao = int(input())
+    
+    if (selecao == 0):
+        exit()
+    elif (selecao == 1):
+        print('''
+    Selecione o tipo da analise:
+    
+    - Amonia;
+    - PH;
+    - O² Dissolvido;
+    - Nitrito.
+            ''')
+        ref = input()
+    
+        # 📂 Pasta com imagens de referência
+        pasta_ref = ref.lower()
+    
+        cadastrar()
+    elif (selecao == 2):
+        print('''
+    Selecione o tipo da analise:
+    
+    - Amonia;
+    - PH;
+    - O² Dissolvido;
+    - Nitrito.
+            ''')
+        ref = input()
+        # 📸 Capturar ROI da câmera
+        roi = capturar_com_roi()
+        
+        if roi is None:
+            exit()
+    
+        cor_ref = cor_mais_frequente(roi)
+        print(f"🎨 Cor capturada: {cor_ref}")
+        # 📂 Pasta com imagens de referência
+        pasta_ref = ref.lower()
+    
+        melhor_sim = -1
+        melhor_img = None
+    
+        # 🔍 Percorrer imagens na pasta
+        for arquivo in os.listdir(pasta_ref):
+            if arquivo.lower().endswith((".jpg", ".png", ".jpeg")):
+                caminho = os.path.join(pasta_ref, arquivo)
+                img = cv2.imread(caminho)
+                if img is None:
+                    continue
+                
+                cor_img = cor_mais_frequente(img)
+                similaridade, diferenca = comparar_cores(cor_ref, cor_img)
+    
+                print(f"{arquivo} -> Similaridade: {similaridade}% | ΔE: {diferenca}")
+    
+                if similaridade > melhor_sim:
+                    melhor_sim = similaridade
+                    melhor_img = arquivo
+    
+        # Resultado final
+        if melhor_img:
+            print(f"\n✅ A imagem mais similar é: {melhor_img} ({melhor_sim}%)")
+        else:
+            print("Nenhuma imagem encontrada na pasta.")
+    
+    else: 
+        print("ta errado ae krai")
+    
