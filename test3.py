@@ -52,7 +52,7 @@ def capturar_com_roi():
 
     cam.release()
 
-    r = cv2.selectROI("Selecione a região e pressione ENTER", frame, showCrosshair=True, fromCenter=False)
+    r = cv2.selectROI("Selecione a região e pressione ENTER", frame, fromCenter=False)
     cv2.destroyAllWindows()
     x, y, w, h = r
     if w == 0 or h == 0:
@@ -72,7 +72,7 @@ cor_ref = cor_mais_frequente(roi)
 print(f"🎨 Cor capturada: {cor_ref}")
 
 # 📂 Pasta com imagens de referência
-pasta_ref = "cadastro"
+pasta_ref = "cadAmonia"
 
 melhor_sim = -1
 melhor_img = None
