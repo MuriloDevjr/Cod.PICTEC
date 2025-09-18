@@ -185,5 +185,4 @@ while True:
             print("Nenhuma imagem encontrada na pasta.")
     
     else: 
-        print("ta errado ae krai")
-    
+        print("Essa opção não existe, por favor tente novamente!")
