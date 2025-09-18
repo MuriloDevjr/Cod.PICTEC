@@ -121,9 +121,14 @@ while True:
     - Nitrito.
             ''')
         ref = input()
+        ref = ref.lower()
     
         # 📂 Pasta com imagens de referência
-        pasta_ref = ref.lower()
+        if (ref == "amonia" or ref == "ph" or ref == "o2 dissolvido" or ref == "nitrito"):    
+            pasta_ref = ref
+        else:
+            print("Essa opção não existe, por favor tente novamente!")
+            exit()
     
         cadastrar()
     elif (selecao == 2):
@@ -136,6 +141,14 @@ while True:
     - Nitrito.
             ''')
         ref = input()
+        ref = ref.lower()
+
+        # 📂 Pasta com imagens de referência
+        if (ref == "amonia" or ref == "ph" or ref == "o2 dissolvido" or ref == "nitrito"):    
+            pasta_ref = ref
+        else:
+            print("Essa opção não existe, por favor tente novamente!")
+            exit()
         # 📸 Capturar ROI da câmera
         roi = capturar_com_roi()
         
@@ -144,9 +157,7 @@ while True:
     
         cor_ref = cor_mais_frequente(roi)
         print(f"🎨 Cor capturada: {cor_ref}")
-        # 📂 Pasta com imagens de referência
-        pasta_ref = ref.lower()
-    
+ 
         melhor_sim = -1
         melhor_img = None
     
