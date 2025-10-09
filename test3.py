@@ -33,7 +33,7 @@ def cor_mais_frequente(imagem, reduzir=10):
 
 def capturar_com_roi():
     """Abre a câmera e permite selecionar uma ROI."""
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(1)
     if not cam.isOpened():
         print("Erro: não consegui acessar a câmera.")
         return None
@@ -62,7 +62,7 @@ def capturar_com_roi():
     return frame[y:y+h, x:x+w]
 def cadastrar():
     # Abre a camera
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(1)
     if not cam.isOpened():
         print("Erro: não consegui acessar a câmera.")
         return None
@@ -113,7 +113,7 @@ while True:
         exit()
     elif (selecao == 1):
         print('''
-    Selecione o tipo da analise:
+    Escolha onde irá cadastrar:
     
     - Amonia;
     - PH;
