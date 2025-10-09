@@ -60,6 +60,7 @@ def capturar_com_roi():
         return None
 
     return frame[y:y+h, x:x+w]
+
 def cadastrar():
     # Abre a camera
     cam = cv2.VideoCapture(0)
@@ -102,23 +103,22 @@ def cadastrar():
 # ---------------- MAIN ----------------
 while True:
     print("""
-    1- Cadastrar;
-    2- Analisar;
-    
-    0- Sair.
+1- Cadastrar;
+2- Analisar;
+
+0- Sair.
     """)
     selecao = int(input())
-    
     if (selecao == 0):
         exit()
     elif (selecao == 1):
         print('''
-    Selecione o tipo da analise:
-    
-    - Amonia;
-    - PH;
-    - O² Dissolvido;
-    - Nitrito.
+Selecione o tipo da analise:
+
+- Amonia;
+- PH;
+- O² Dissolvido;
+- Nitrito.
             ''')
         ref = input()
         ref = ref.lower()
@@ -133,12 +133,12 @@ while True:
         cadastrar()
     elif (selecao == 2):
         print('''
-    Selecione o tipo da analise:
-    
-    - Amonia;
-    - PH;
-    - O² Dissolvido;
-    - Nitrito.
+Selecione o tipo da analise:
+
+- Amonia;
+- PH;
+- O² Dissolvido;
+- Nitrito.
             ''')
         ref = input()
         ref = ref.lower()
@@ -185,4 +185,4 @@ while True:
             print("Nenhuma imagem encontrada na pasta.")
     
     else: 
-        print("Essa opção não existe, por favor tente novamente!")
+        print("Essa opção não existe, por favor tente novamente!")  
