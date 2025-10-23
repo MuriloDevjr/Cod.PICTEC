@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
 import os
+import pandas as pd
 from collections import Counter
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
+
+valPH = 0
 
 # 🔧 Patch para compatibilidade (NumPy 2.x não tem mais asscalar)
 if not hasattr(np, "asscalar"):
@@ -33,10 +36,17 @@ def cor_mais_frequente(imagem, reduzir=10):
 
 def capturar_com_roi():
     """Abre a câmera e permite selecionar uma ROI."""
-    cam = cv2.VideoCapture(1)
-    if not cam.isOpened():
-        print("Erro: não consegui acessar a câmera.")
-        return None
+    numCam = 0
+    veri = False
+    while (veri == False):
+        try:
+            cam = cv2.VideoCapture(numCam)
+            if (cam.isOpened()):
+                veri = True
+
+        except:
+                print("Erro: não consegui acessar a câmera.")
+                numCam += 1
 
     while True:
         ret, frame = cam.read()
@@ -63,10 +73,16 @@ def capturar_com_roi():
 
 def cadastrar():
     # Abre a camera
-    cam = cv2.VideoCapture(1)
-    if not cam.isOpened():
-        print("Erro: não consegui acessar a câmera.")
-        return None
+    numCam = 0
+    veri = 0
+    while (veri == False):
+        try:
+            cam = cv2.VideoCapture(numCam)
+            if (cam.isOpened()):
+                veri = True
+        except:
+                print("Erro: não consegui acessar a câmera.")
+                numCam += 1
     
     while True:
         ret, frame = cam.read()
@@ -109,7 +125,7 @@ while True:
 0- Sair.
     """)
     selecao = int(input())
-    if (selecao == 0):
+    if (selecao  == 0):
         exit()
     elif (selecao == 1):
         print('''
@@ -183,6 +199,12 @@ Selecione o tipo da analise:
             print(f"\n✅ A imagem mais similar é: {melhor_img} ({melhor_sim}%)")
         else:
             print("Nenhuma imagem encontrada na pasta.")
-    
+        if (ref == "ph"):
+            melhor_img = melhor_img.split(".")
+            valPH = melhor_img[0]
+        elif(valPH == 0):
+            print("O ph não foi analisado!")
+
+        print(valPH)
     else: 
         print("Essa opção não existe, por favor tente novamente!")  
