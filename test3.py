@@ -207,4 +207,4 @@ Selecione o tipo da analise:
 
         print(valPH)
     else: 
-        print("Essa opção não existe, por favor tente novamente!")  
+        print("Essa opção não existe, por favor tente novamente!")
