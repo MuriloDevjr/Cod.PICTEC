@@ -1,5 +1,4 @@
 import pandas as pd
-nh3V = 6.5
-valor = pd.read_csv("valor.csv")
-amonia = valor.loc[valor["6.5"], "ph"]
-print(amonia)
+valor = pd.read_csv("tabelas/ph6,6.csv")
+coluna = valor["temp"]
+print(coluna.head())
