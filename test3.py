@@ -6,6 +6,7 @@ from collections import Counter
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
+import testePandas as tab
 
 valPH = 0
 
@@ -204,7 +205,8 @@ Selecione o tipo da analise:
             valPH = melhor_img[0]
         elif(valPH == 0):
             print("O ph não foi analisado!")
-
         print(valPH)
+        if(ref == "amonia"):
+            tab.procurarTab(valPH,  melhor_img)
     else: 
         print("Essa opção não existe, por favor tente novamente!")
