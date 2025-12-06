@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import os
-import pandas as pd
 from collections import Counter
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
@@ -207,6 +206,6 @@ Selecione o tipo da analise:
             print("O ph não foi analisado!")
         print(valPH)
         if(ref == "amonia"):
-            tab.procurarTab(valPH,  melhor_img)
+            tab.procurarTab(valPH, melhor_img)
     else: 
         print("Essa opção não existe, por favor tente novamente!")
