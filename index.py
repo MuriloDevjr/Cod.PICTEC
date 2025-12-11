@@ -5,7 +5,7 @@ from collections import Counter
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
-import testePandas as tab
+import lerAmoniaTox as tab
 
 valPH = 0
 
