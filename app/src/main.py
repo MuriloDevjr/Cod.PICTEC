@@ -18,21 +18,24 @@ class RegisterButton(Button):
 
 @ft.control
 class loginPage(ft.Container):
+    bgcolor: ft.Colors = ft.Colors.CYAN
     def init(self):
-        self.width = 500
-        self.height = 100
+        self.width = 600
+        self.height = 950
         
         self.content = ft.Column(
+        alignment=ft.MainAxisAlignment.END,
             controls=[
                 ft.Row(
                     alignment=ft.MainAxisAlignment.END,
                 ),
                 ft.Row(
+                    margin = ft.Margin.all(30), 
                     controls=[
-                        LoginButton(content = "Login"),
+                        LoginButton(content = "Login", margin = ft.Margin.only(right=30)),
                         RegisterButton(content = "Register")
                     ]
-                )
+                )    
             ]
         )
 
