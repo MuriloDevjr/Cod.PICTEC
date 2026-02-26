@@ -15,14 +15,14 @@ def main(page: ft.Page):
         senha = ft.TextField(width=300, label="Senha", password=True)
 
         def entrar(e):
-            if email.value != "" and senha.value != "":
+            if email.value == "" and senha.value == "":
                 show_dashboard()
 
         login_card = ft.Container(
             width=400,
             padding=30,
             border_radius=15,
-            bgcolor=ft.colors.WHITE,
+            bgcolor=ft.Colors.WHITE,
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
@@ -52,15 +52,15 @@ def main(page: ft.Page):
 
         sidebar = ft.Container(
             width=200,
-            bgcolor=ft.colors.BLUE_700,
+            bgcolor=ft.Colors.BLUE_700,
             padding=20,
             content=ft.Column(
                 controls=[
-                    ft.Text("Menu", color=ft.colors.WHITE, size=18),
+                    ft.Text("Menu", color=ft.Colors.WHITE, size=18),
                     ft.Divider(color=ft.Colors.WHITE),
-                    ft.TextButton("Dashboard", style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                    ft.TextButton("Analisar Água", style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                    ft.TextButton("Sair", style=ft.ButtonStyle(color=ft.colors.WHITE), on_click=lambda e: show_login())
+                    ft.TextButton("Dashboard", style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                    ft.TextButton("Analisar Água", style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                    ft.TextButton("Sair", style=ft.ButtonStyle(color=ft.Colors.WHITE), on_click=lambda e: show_login())
                 ]
             )
         )
