@@ -2,44 +2,6 @@ from dataclasses import field
 import flet as ft
 import cam
 
-@ft.control
-class Button(ft.Button):
-    expand: int = field(default_factory=lambda: 1)
-
-
-@ft.control
-class LoginButton(Button):
-    bgcolor: ft.Colors = ft.Colors.BLUE_700
-    color: ft.Colors = ft.Colors.BLACK
-
-@ft.control
-class RegisterButton(Button):
-    bgcolor: ft.Colors = ft.Colors.BLUE_GREY
-    color: ft.Colors = ft.Colors.BLACK
-
-@ft.control
-class loginPage(ft.Container):
-    bgcolor: ft.Colors = ft.Colors.CYAN
-    def init(self):
-        self.width = 600
-        self.height = 800
-        
-        self.content = ft.Column(
-        alignment=ft.MainAxisAlignment.END,
-            controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.END,
-                ),
-                ft.Row(
-                    margin = ft.Margin.all(30), 
-                    controls=[
-                        LoginButton(content = "Login", margin = ft.Margin.only(right=30), on_click=show_login()),
-                        RegisterButton(content = "Register")
-                    ]
-                )    
-            ]
-        )
-
 def main(page: ft.Page):
     page.title = "AquaScan"
     page.window_width = 900
@@ -47,153 +9,179 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.DARK
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
-
-    page.bgcolor = ft.Colors.TRANSPARENT
-
-    background = ft.Image(
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrapHhyL9Onk_RQzU7rqiJdIIrWDBlhWJfIg&s",
-        width=900,
-        height=600,
-        #fit=ft.ImageFit.COVER,
-    )
-
-    @ft.control
-    class Button(ft.Button):
-        expand: int = field(default_factory=lambda: 1)
-
-
-    @ft.control
-    class LoginButton(Button):
-        bgcolor: ft.Colors = ft.Colors.BLUE_700
-        color: ft.Colors = ft.Colors.BLACK
-
-    @ft.control
-    class RegisterButton(Button):
-        bgcolor: ft.Colors = ft.Colors.BLUE_GREY
-        color: ft.Colors = ft.Colors.BLACK
-
-    @ft.control
-    class loginPage(ft.Container):
-        bgcolor: ft.Colors = ft.Colors.CYAN
-        def init(self):
-            self.width = 600
-            self.height = 800
-
-            self.content = ft.Column(
-            alignment=ft.MainAxisAlignment.END,
-                controls=[
-                    ft.Row(
-                        alignment=ft.MainAxisAlignment.END,
-                    ),
-                    ft.Row(
-                        margin = ft.Margin.all(30), 
-                        controls=[
-                            LoginButton(content = "Login", margin = ft.Margin.only(right=30), on_click=show_login),
-                            RegisterButton(content = "Register")
-                        ]
-                    )    
-                ]
-            )
-
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.bgcolor = "#0f172a"
 
     def show_login():
         page.controls.clear()
 
-        email = ft.TextField(width=300, label="Email")
-        senha = ft.TextField(width=300, label="Senha", password=True)
+        email = ft.TextField(width=300, label="Email", border_radius=10)
+        senha = ft.TextField(width=300, label="Senha", password=True, border_radius=10)
 
         def entrar(e):
             if email.value == "arroz" and senha.value == "mosca":
                 show_dashboard()
             else:
-                print("usuario lenda abatido")
+                email.error_text = "Login inválido"
+                page.update()
 
         login_card = ft.Container(
-            width=400,
+            width=380,
             padding=30,
-            border_radius=15,
-            bgcolor=ft.Colors.WHITE,
+            border_radius=20,
+            bgcolor="#1e293b",
             content=ft.Column(
+                alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
-                    ft.Text("AquaScan", size=28, weight=ft.FontWeight.BOLD),
-                    ft.Text("Monitoramento Inteligente da Água", size=14),
+                    ft.Text("💧 AquaScan", size=30, weight=ft.FontWeight.BOLD),
+                    ft.Text("Monitoramento Inteligente", size=14),
                     email,
                     senha,
-                    ft.ElevatedButton(
-                        "Entrar",
-                        width=300,
-                        on_click=entrar
-                    )
+                    ft.ElevatedButton("Entrar", width=300, on_click=entrar),
                 ]
             )
         )
 
         page.add(login_card)
 
-        def show_dashboard():
+    def show_dashboard():
+        page.controls.clear()
+
+        resultado = ft.Text("Nenhuma análise realizada", size=16)
+
+        def analisar(e):
+            cam.teste()
+            resultado.value = "Análise concluída"
+            page.update()
+
+        def show_analise_page(e=None):
             page.controls.clear()
 
-            resultado = ft.Text("Nenhuma análise realizada", size=16)
-
-            def analisar(e):
-                cam.teste()
-                resultado.value = "Resultado: Qualidade da água = 0.02 mg/L"
-                page.update()
-
-            sidebar = ft.Container(
-                width=200,
-                bgcolor=ft.Colors.BLUE_700,
-                padding=20,
-                content=ft.Column(
-                    controls=[
-                        ft.Text("Menu", color=ft.Colors.WHITE, size=18),
-                        ft.Divider(color=ft.Colors.WHITE),
-                        ft.TextButton("Dashboard", style=ft.ButtonStyle(color=ft.Colors.WHITE)),
-                        ft.TextButton("Analisar Água", style=ft.ButtonStyle(color=ft.Colors.WHITE)),
-                        ft.TextButton("Sair", style=ft.ButtonStyle(color=ft.Colors.WHITE), on_click=lambda e: show_login)
-                    ]
+            def card_item(nome):
+                return ft.Container(
+                    width=150,
+                    height=120,
+                    border_radius=15,
+                    bgcolor="#1e293b",
+                    content=ft.Column(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Text(nome, size=16, weight=ft.FontWeight.BOLD),
+                            ft.ElevatedButton("Analisar", on_click=analisar)
+                        ]
+                    )
                 )
-            )
 
-            content = ft.Container(
+            grid = ft.GridView(
                 expand=True,
-                padding=30,
-                content=ft.Column(
-                    controls=[
-                        ft.Text("Dashboard", size=26, weight=ft.FontWeight.BOLD),
-                        ft.Container(
-                            padding=20,
-                            border_radius=10,
-                            bgcolor=ft.Colors.BLUE_50,
-                            content=ft.Column(
-                                controls=[
-                                    ft.Text("Análise de Qualidade da Água", size=18),
-                                    ft.ElevatedButton(
-                                        "Iniciar Análise",
-                                        on_click=analisar
-                                    ),
-                                    resultado
-                                ]
-                            )
-                        )
-                    ]
-                )
+                runs_count=3,
+                spacing=20,
+                run_spacing=20,
+                controls=[
+                    card_item("pH"),
+                    card_item("Amônia"),
+                    card_item("Oxigênio"),
+                    card_item("Nitrito"),
+                    card_item("Amônia Crítica"),
+                ]
             )
+
             page.add(
-                ft.Row(
-                    expand=True,
+                ft.Column(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
-                        sidebar,
-                        content
+                        ft.Text("Selecionar Análise", size=26, weight=ft.FontWeight.BOLD),
+                        grid,
+                        ft.ElevatedButton("Voltar", on_click=lambda e: show_dashboard())
                     ]
                 )
             )
-    log = loginPage()
-    page.add(log)
-    
+
+        sidebar = ft.Container(
+            width=200,
+            bgcolor="#1e3a8a",
+            padding=20,
+            content=ft.Column(
+                controls=[
+                    ft.Text("Menu", size=18, color="white"),
+                    ft.Divider(),
+                    ft.TextButton("Dashboard", on_click=lambda e: show_dashboard(), style=ft.ButtonStyle(color="white")),
+                    ft.TextButton("Analisar", on_click=show_analise_page, style=ft.ButtonStyle(color="white")),
+                    ft.TextButton("Sair", on_click=lambda e: show_login(), style=ft.ButtonStyle(color="white")),
+                ]
+            )
+        )
+
+        content = ft.Container(
+            expand=True,
+            padding=30,
+            content=ft.Column(
+                controls=[
+                    ft.Text("Dashboard", size=28, weight=ft.FontWeight.BOLD),
+
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        controls=[
+                            ft.Container(
+                                width=200,
+                                height=120,
+                                bgcolor="#1e293b",
+                                border_radius=15,
+                                content=ft.Column(
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                    controls=[ft.Text("Cadastrar")]
+                                )
+                            ),
+                            ft.Container(
+                                width=200,
+                                height=120,
+                                bgcolor="#1e293b",
+                                border_radius=15,
+                                content=ft.Column(
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                    controls=[
+                                        ft.ElevatedButton("Analisar", on_click=show_analise_page)
+                                    ]
+                                )
+                            ),
+                            ft.Container(
+                                width=200,
+                                height=120,
+                                bgcolor="#1e293b",
+                                border_radius=15,
+                                content=ft.Column(
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                    controls=[
+                                        ft.ElevatedButton("Sair", on_click=lambda e: show_login())
+                                    ]
+                                )
+                            ),
+                        ],
+                    ),
+
+                    ft.Container(
+                        margin=20,
+                        padding=20,
+                        border_radius=15,
+                        bgcolor="#1e293b",
+                        content=ft.Column(
+                            controls=[
+                                ft.Text("Resultado da Análise", size=18),
+                                resultado
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+
+        page.add(ft.Row([sidebar, content], expand=True))
+
+    show_login()
+
 ft.app(target=main)
-ft.run(main)
