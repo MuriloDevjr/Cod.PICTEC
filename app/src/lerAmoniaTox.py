@@ -1,10 +1,11 @@
 import pandas as pd
 def procurarTab(ph,buscaAmonia):
-    linha =0
-    coluna=0
+    linha = 0
+    coluna = 0
     ct = 0
     v = False
-    buscaTemp = int(input("Digite o valor da temperatura: "))
+    print("Digite o valor da temperatura: ")
+    buscaTemp = int(input())
     buscaAmonia = buscaAmonia.split(".")    
     amonia = buscaAmonia[0]
     if(amonia == "0,25"):
