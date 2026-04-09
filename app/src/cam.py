@@ -7,52 +7,45 @@ from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
 import lerAmoniaTox as tab
 
-valPH = 0
+valPH = None  # guarda o valor do pH detectado
 
-# 🔧 Patch para compatibilidade (NumPy 2.x não tem mais asscalar)
+# Patch compatibilidade NumPy 2.x
 if not hasattr(np, "asscalar"):
     np.asscalar = lambda x: x.item()
 
 def comparar_cores(rgb1, rgb2):
-    """Compara duas cores RGB e retorna a similaridade (%) e a diferença DeltaE."""
     cor1 = sRGBColor(rgb1[0], rgb1[1], rgb1[2], is_upscaled=True)
     cor2 = sRGBColor(rgb2[0], rgb2[1], rgb2[2], is_upscaled=True)
-
     cor1_lab = convert_color(cor1, LabColor)
     cor2_lab = convert_color(cor2, LabColor)
-
     diferenca = delta_e_cie2000(cor1_lab, cor2_lab)
-    similaridade = max(0, 100 - diferenca * 2)  
+    similaridade = max(0, 100 - diferenca * 2)
     return round(similaridade, 2), round(float(diferenca), 2)
 
 def cor_mais_frequente(imagem, reduzir=10):
-    """Reduz a imagem e encontra a cor mais frequente."""
     img_rgb = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
     img_rgb = cv2.resize(img_rgb, (img_rgb.shape[1] // reduzir, img_rgb.shape[0] // reduzir))
     pixels = img_rgb.reshape(-1, 3)
     contador = Counter(tuple(int(p) for p in px) for px in pixels)
     cor = contador.most_common(1)[0][0]
-    return cor  # (R, G, B)
+    return cor
 
 def capturar_com_roi():
-    """Abre a câmera e permite selecionar uma ROI."""
+    """Abre a câmera, permite selecionar ROI e retorna imagem recortada."""
     numCam = 0
-    veri = False
-    while (veri == False):
-        try:
-            cam = cv2.VideoCapture(numCam)
-            if (cam.isOpened()):
-                veri = True
-
-        except:
-                print("Erro: não consegui acessar a câmera.")
-                numCam += 1
+    while True:
+        cam = cv2.VideoCapture(numCam)
+        if cam.isOpened():
+            break
+        numCam += 1
+        if numCam > 3:
+            return None
 
     while True:
         ret, frame = cam.read()
         if not ret:
-            print("Erro ao capturar frame.")
-            break
+            cam.release()
+            return None
 
         cv2.imshow("Pressione ENTER para capturar", frame)
         key = cv2.waitKey(1) & 0xFF
@@ -60,153 +53,51 @@ def capturar_com_roi():
             cv2.destroyAllWindows()
             break
 
-    cam.release()
-
     r = cv2.selectROI("Selecione a região e pressione ENTER", frame, fromCenter=False)
     cv2.destroyAllWindows()
     x, y, w, h = r
+    cam.release()
     if w == 0 or h == 0:
-        print("Nenhuma região selecionada.")
         return None
-
     return frame[y:y+h, x:x+w]
 
-def cadastrar():
-    # Abre a camera
-    numCam = 0
-    veri = 0
-    while (veri == False):
-        try:
-            cam = cv2.VideoCapture(numCam)
-            if (cam.isOpened()):
-                veri = True
-        except:
-                print("Erro: não consegui acessar a câmera.")
-                numCam += 1
-    
-    while True:
-        ret, frame = cam.read()
-        if not ret:
-            print("Erro ao ler da câmera.")
-            break
-        cv2.imshow("Capturar imagem referência", frame)
-        key = cv2.waitKey(1) & 0xFF
-        # if the 'enter' key is pressed, stop the loop
-        if key == 13:
-            imagemRef = frame
+def analisarTipo(tipo, temp):
+    """Captura ROI e compara com referências"""
+    global valPH
+    roi = capturar_com_roi()
+    if roi is None:
+        return "Nenhuma região selecionada"
 
-            r = cv2.selectROI("Selecione o retangulo com o mouse (tecle ENTER para confirmar)", imagemRef, False, False)
-            x, y, w, h = r
-            cv2.destroyAllWindows()
+    pasta_ref = str(f"src/{tipo.lower()}")
+    if not os.path.exists(pasta_ref):
+        return f"Pasta de referência '{tipo}' não encontrada"
 
-            recorteRef = frame[int(y):int(y+h), int(x):int(x+w)]
-  
-            # Obter pH
-            ph = input("Digite o valor do pH (ou pressione ENTER para encerrar): ")
-            if not ph.strip():
-                print("Encerrando coleta.")
-                break
+    cor_ref = cor_mais_frequente(roi)
+    melhor_sim = -1
+    melhor_img = None
 
-            nomeRef = os.path.join(pasta_ref, f"{ph}.jpg")
-            cv2.imwrite(nomeRef, recorteRef)
-            cv2.destroyAllWindows()
-            break
-        
-    cor_cad = cor_mais_frequente(recorteRef)
+    for arquivo in os.listdir(pasta_ref):
+        if arquivo.lower().endswith((".jpg", ".png", ".jpeg")):
+            caminho = os.path.join(pasta_ref, arquivo)
+            img = cv2.imread(caminho)
+            if img is None:
+                continue
+            cor_img = cor_mais_frequente(img)
+            similaridade, _ = comparar_cores(cor_ref, cor_img)
+            if similaridade > melhor_sim:
+                melhor_sim = similaridade
+                melhor_img = arquivo
 
-    print(type(cor_cad))
+    if not melhor_img:
+        return "Nenhuma referência encontrada"
 
-# ---------------- MAIN ----------------
-def teste():
-    while True:
-        print("""
-    1- Cadastrar;
-    2- Analisar;
-    
-    0- Sair.
-        """)
-        selecao = int(input())
-        if (selecao  == 0):
-            exit()
-        elif (selecao == 1):
-            print('''
-        Selecione o tipo da analise:
-        
-        - Amonia;
-        - PH;
-        - O² Dissolvido;
-        - Nitrito.
-                ''')
-            ref = input()
-            ref = ref.lower()
-        
-            # 📂 Pasta com imagens de referência
-            if (ref == "amonia" or ref == "ph" or ref == "o2 dissolvido" or ref == "nitrito"):    
-                pasta_ref = ref
-            else:
-                print("Essa opção não existe, por favor tente novamente!")
-                exit()
-        
-            cadastrar()
-        elif (selecao == 2):
-            print('''
-    Selecione o tipo da analise:
-    
-    - Amonia;
-    - PH;
-    - O² Dissolvido;
-    - Nitrito.
-                ''')
-            ref = input()
-            ref = ref.lower()
-    
-            # 📂 Pasta com imagens de referência
-            if (ref == "amonia" or ref == "ph" or ref == "o2 dissolvido" or ref == "nitrito"):    
-                pasta_ref = ref
-            else:
-                print("Essa opção não existe, por favor tente novamente!")
-                exit()
-            # 📸 Capturar ROI da câmera
-            roi = capturar_com_roi()
-            
-            if roi is None:
-                exit()
-        
-            cor_ref = cor_mais_frequente(roi)
-            print(f"🎨 Cor capturada: {cor_ref}")
-    
-            melhor_sim = -1
-            melhor_img = None
-        
-            # 🔍 Percorrer imagens na pasta
-            for arquivo in os.listdir(pasta_ref):
-                if arquivo.lower().endswith((".jpg", ".png", ".jpeg")):
-                    caminho = os.path.join(pasta_ref, arquivo)
-                    img = cv2.imread(caminho)
-                    if img is None:
-                        continue
-                    
-                    cor_img = cor_mais_frequente(img)
-                    similaridade, diferenca = comparar_cores(cor_ref, cor_img)
-        
-                    print(f"{arquivo} -> Similaridade: {similaridade}% | ΔE: {diferenca}")
-        
-                    if similaridade > melhor_sim:
-                        melhor_sim = similaridade
-                        melhor_img = arquivo
-        
-            # Resultado final
-            if melhor_img:
-                print(f"\n✅ A imagem mais similar é: {melhor_img} ({melhor_sim}%)")
-            else:
-                print("Nenhuma imagem encontrada na pasta.")
-            if (ref == "ph"):
-                melhor_img = melhor_img.split(".")
-                valPH = melhor_img[0]
-            elif(valPH == 0):
-                print("O ph não foi analisado!")
-            print(valPH)
-            if(ref == "amonia"):
-                tab.procurarTab(valPH, melhor_img)
-        else: 
-            print("Essa opção não existe, por favor tente novamente!")
+    if tipo.lower() == "ph":
+        valPH = melhor_img.split(".")[0]
+        return f"pH detectado: {valPH}"
+    elif tipo.lower() == "amonia":
+        if valPH is None:
+            return "Erro: analise o pH primeiro"
+        amoniaCrit = tab.procurarTab(valPH, melhor_img, temp)
+        return f"Amonia Crítica: {amoniaCrit}"
+
+    return f"{tipo.capitalize()} analisado: {melhor_img} ({melhor_sim}%)"
