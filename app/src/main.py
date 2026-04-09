@@ -1,188 +1,164 @@
-from dataclasses import field
 import flet as ft
 import cam
+from datetime import datetime
+import pandas as pd
+import threading
 
 def main(page: ft.Page):
     page.title = "AquaScan"
-    page.window_width = 900
-    page.window_height = 600
     page.theme_mode = ft.ThemeMode.DARK
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.window_width = 400
+    page.window_height = 700
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.bgcolor = "#0f172a"
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.bgcolor = ft.Colors.BLUE_GREY_900
 
-    def show_login():
+    # ---------------- HISTÓRICO ----------------
+    def salvar_historico(tipo, resultado):
+        try:
+            df = pd.read_csv("historico.csv")
+        except:
+            df = pd.DataFrame(columns=["Data", "Hora", "Tipo", "Resultado"])
+
+        agora = datetime.now()
+        novo = {
+            "Data": agora.strftime("%d/%m/%Y"),
+            "Hora": agora.strftime("%H:%M"),
+            "Tipo": tipo,
+            "Resultado": resultado
+        }
+
+        df = pd.concat([df, pd.DataFrame([novo])], ignore_index=True)
+        df.to_csv("historico.csv", index=False)
+
+    def carregar_historico():
         page.controls.clear()
+        try:
+            df = pd.read_csv("historico.csv")
+            historico_textos = []
+            for _, row in df.iterrows():
+                historico_textos.append(f"{row['Tipo']} | {row['Resultado']} ({row['Hora']} {row['Data']})")
+            return historico_textos
+        except:
+            return []
 
-        email = ft.TextField(width=300, label="Email", border_radius=10)
-        senha = ft.TextField(width=300, label="Senha", password=True, border_radius=10)
-
-        def entrar(e):
-            if email.value == "arroz" and senha.value == "mosca":
-                show_dashboard()
-            else:
-                email.error_text = "Login inválido"
-                page.update()
-
-        login_card = ft.Container(
-            width=380,
-            padding=30,
-            border_radius=20,
-            bgcolor="#1e293b",
-            content=ft.Column(
+    # ---------------- TELA INICIAL ----------------
+    def tela_inicial():
+        page.controls.clear()
+        page.add(
+            ft.Column(
+                spacing=20,
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
-                    ft.Text("💧 AquaScan", size=30, weight=ft.FontWeight.BOLD),
-                    ft.Text("Monitoramento Inteligente", size=14),
-                    email,
-                    senha,
-                    ft.ElevatedButton("Entrar", width=300, on_click=entrar),
+                    ft.Image(src="src/drop.png", width=100, height=100),
+                    ft.Text("AquaScan", size=38, weight=ft.FontWeight.BOLD),
+                    ft.Text("Monitoramento Inteligente da Água", size=16),
+                    ft.ElevatedButton("Entrar", on_click=lambda e: tela_login())
                 ]
             )
         )
 
-        page.add(login_card)
-
-    def show_dashboard():
+    # ---------------- LOGIN ----------------
+    def tela_login():
         page.controls.clear()
 
-        resultado = ft.Text("Nenhuma análise realizada", size=16)
-            
-        def show_analise_page(e=None):
-            page.controls.clear()
-            def analisar(nome):
-                valor = nome
-                if(valor.lower() == "ph"):
-                    valPh, valAmonia, amoniaCrit = cam.analisar(nome)
-                resultado.value = "Analise Concluida!"
-                page.update()
-            def card_item(nome):
-                return ft.Container(
-                    width=150,
-                    height=120,
-                    border_radius=15,
-                    bgcolor="#1e293b",
-                    valor = nome,
-                    content=ft.Column(
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        controls=[
-                            ft.Text(nome, size=16, weight=ft.FontWeight.BOLD),
-                            ft.ElevatedButton("Analisar", on_click=analisar(valor))
-                        ]
-                    )
-                )
+        email = ft.TextField(label="email", width=300)
+        senha = ft.TextField(label="senha", password=True, width=300)
 
-            grid = ft.GridView(
-                expand=True,
-                runs_count=3,
-                spacing=20,
-                run_spacing=20,
+        def entrar(e):
+            if email.value and senha.value:
+                tela_dashboard()
+
+        page.add(
+            ft.Column(
+                spacing=15,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
-                    card_item("pH"),
-                    card_item("Amonia"),
-                    card_item("Oxigenio"),
-                    card_item("Nitrito"),
-                    card_item("Amonia Critica"),
+                    ft.Text("Login", size=30, weight=ft.FontWeight.BOLD),
+                    email,
+                    senha,
+                    ft.ElevatedButton("Entrar", on_click=entrar),
+                    ft.TextButton("Voltar", on_click=lambda e: tela_inicial())
                 ]
             )
+        )
 
-            page.add(
-                ft.Column(
+    # ---------------- DASHBOARD ----------------
+    def tela_dashboard():
+        page.controls.clear()
+
+        # Feed de análises
+        analises_controles = ft.Column(spacing=5, scroll="auto")
+        historico = carregar_historico()
+        # mostrar mais recente em cima
+        texto = reversed(historico)
+
+        def analisar(tipo):
+            def func():
+                resultado = cam.analisarTipo(tipo)
+                agora = datetime.now()
+                texto_completo = f"{tipo} | {resultado} ({agora.strftime('%H:%M %d/%m/%Y')})"
+                salvar_historico(tipo, resultado)
+                analises_controles.controls.insert(0, ft.Text(texto_completo))
+                page.update()
+            threading.Thread(target=func).start()
+            analises_controles.controls.insert(0, ft.Text(f"{tipo} | Aguardando captura..."))
+            page.update()
+
+        def card(nome, imagem_url):
+            return ft.Container(
+                width=160,
+                height=170,
+                bgcolor=ft.Colors.BLUE_GREY_800,
+                border_radius=20,
+                padding=10,
+                shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK54),
+                content=ft.Column(
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
-                        ft.Text("Selecionar Análise", size=26, weight=ft.FontWeight.BOLD),
-                        grid,
-                        ft.ElevatedButton("Voltar", on_click=lambda e: show_dashboard())
+                        ft.Image(src=imagem_url, width=50, height=50),
+                        ft.Text(nome, size=18, weight=ft.FontWeight.BOLD),
+                        ft.ElevatedButton(
+                            "Analisar",
+                            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE, color=ft.Colors.WHITE),
+                            on_click=lambda e: analisar(nome.lower(), temp)
+                        )
                     ]
                 )
             )
 
-        sidebar = ft.Container(
-            width=200,
-            bgcolor="#1e3a8a",
-            padding=20,
-            content=ft.Column(
-                controls=[
-                    ft.Text("Menu", size=18, color="white"),
-                    ft.Divider(),
-                    ft.TextButton("Dashboard", on_click=lambda e: show_dashboard(), style=ft.ButtonStyle(color="white")),
-                    ft.TextButton("Analisar", on_click=show_analise_page, style=ft.ButtonStyle(color="white")),
-                    ft.TextButton("Sair", on_click=lambda e: show_login(), style=ft.ButtonStyle(color="white")),
-                ]
-            )
-        )
-
-        content = ft.Container(
-            expand=True,
-            padding=30,
-            content=ft.Column(
+        page.add(
+            ft.Column(
+                spacing=15,
                 controls=[
                     ft.Text("Dashboard", size=28, weight=ft.FontWeight.BOLD),
-
+                    analises_controles,
                     ft.Row(
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
-                            ft.Container(
-                                width=200,
-                                height=120,
-                                bgcolor="#1e293b",
-                                border_radius=15,
-                                content=ft.Column(
-                                    alignment=ft.MainAxisAlignment.CENTER,
-                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                    controls=[ft.Text("Cadastrar")]
-                                )
-                            ),
-                            ft.Container(
-                                width=200,
-                                height=120,
-                                bgcolor="#1e293b",
-                                border_radius=15,
-                                content=ft.Column(
-                                    alignment=ft.MainAxisAlignment.CENTER,
-                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                    controls=[
-                                        ft.ElevatedButton("Analisar", on_click=show_analise_page)
-                                    ]
-                                )
-                            ),
-                            ft.Container(
-                                width=200,
-                                height=120,
-                                bgcolor="#1e293b",
-                                border_radius=15,
-                                content=ft.Column(
-                                    alignment=ft.MainAxisAlignment.CENTER,
-                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                    controls=[
-                                        ft.ElevatedButton("Sair", on_click=lambda e: show_login())
-                                    ]
-                                )
-                            ),
-                        ],
+                            card("pH", "src/ph.png"),
+                            card("Amonia", "src/amonia.png"),
+                        ]
                     ),
-
-                    ft.Container(
-                        margin=20,
-                        padding=20,
-                        border_radius=15,
-                        bgcolor="#1e293b",
-                        content=ft.Column(
-                            controls=[
-                                ft.Text("Resultado da Análise", size=18),
-                                resultado
-                            ]
-                        )
-                    )
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        controls=[
+                            card("Oxigenio", "src/oxigenio.png"),
+                            card("Nitrito", "src/nitrato (1).png"),
+                        ]
+                    ),
+                    ft.ElevatedButton("Sair", on_click=lambda e: tela_inicial())
                 ]
             )
         )
+        page.update()
+        ft.Text(texto)
 
-        page.add(ft.Row([sidebar, content], expand=True))
+    # inicia app
+    tela_inicial()
+    page.update()
 
-    show_login()
 
 ft.app(target=main)

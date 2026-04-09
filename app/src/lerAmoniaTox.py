@@ -1,11 +1,10 @@
 import pandas as pd
-def procurarTab(ph,buscaAmonia):
+def procurarTab(ph,buscaAmonia, temp):
     linha = 0
     coluna = 0
     ct = 0
     v = False
-    print("Digite o valor da temperatura: ")
-    buscaTemp = int(input())
+    buscaTemp = temp
     buscaAmonia = buscaAmonia.split(".")    
     amonia = buscaAmonia[0]
     if(amonia == "0,25"):
@@ -24,7 +23,7 @@ def procurarTab(ph,buscaAmonia):
             print("A amonia não é crítica!")
             v = True
     else:
-        valor = pd.read_csv(f"tabelas/ph{ph}.csv")
+        valor = pd.read_csv(f"src/tabelas/ph{ph}.csv")
     if(v == False):
         for i in valor.head():
             l1 = valor[i]
@@ -33,6 +32,7 @@ def procurarTab(ph,buscaAmonia):
                 for i2 in l1:
                     if(buscaTemp == int(valor["0"][ct])):
                         print(f"Amonia Crítica: {i2}")
+                        return i2
                     linha+=1
                     ct += 1
             coluna+=1
