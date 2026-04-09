@@ -48,47 +48,98 @@ def main(page: ft.Page):
         page.controls.clear()
 
         resultado = ft.Text("Nenhuma análise realizada", size=16)
-            
-        def show_analise_page(e=None):
-            page.controls.clear()
-            def analisar(nome):
-                valor = nome
-                if(valor.lower() == "ph"):
-                    valPh, valAmonia, amoniaCrit = cam.analisar(nome)
-                resultado.value = "Analise Concluida!"
-                page.update()
-            def card_item(nome):
-                return ft.Container(
-                    width=150,
-                    height=120,
-                    border_radius=15,
-                    bgcolor="#1e293b",
-                    valor = nome,
-                    content=ft.Column(
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        controls=[
-                            ft.Text(nome, size=16, weight=ft.FontWeight.BOLD),
-                            ft.ElevatedButton("Analisar", on_click=analisar(valor))
-                        ]
-                    )
-                )
 
-            grid = ft.GridView(
-                expand=True,
-                runs_count=3,
-                spacing=20,
-                run_spacing=20,
-                controls=[
-                    card_item("pH"),
-                    card_item("Amonia"),
-                    card_item("Oxigenio"),
-                    card_item("Nitrito"),
-                    card_item("Amonia Critica"),
-                ]
+        def analisar(e):
+            cam.teste()
+            resultado.value = "Análise concluída"
+            page.update()
+
+        def show_analise_page(e=None):
+         page.controls.clear()
+
+        def card_item(nome, imagem_path, cor_borda="#9333ea"):
+            def analisar_especifico(e):
+                # Aqui você pode adicionar lógica específica para cada análise
+                print(f"Analisando {nome}")
+                # Exemplo: abrir página de análise específica
+                # show_analise_detalhes(nome)
+            
+            return ft.Container(
+                width=150,
+                height=120,
+                border_radius=15,
+                border=ft.border.all(3, cor_borda),
+                clip_behavior=ft.ClipBehavior.HARD_EDGE,  # Importante!
+                
+                content=ft.Stack(
+                    controls=[
+                        # 1️⃣ Imagem de fundo
+                        ft.Image(
+                            src=imagem_path,
+                            width=150,
+                            height=120,
+                            fit="cover",
+                        ),
+                        
+                        # 2️⃣ Overlay escuro para legibilidade
+                        ft.Container(
+                            width=150,
+                            height=120,
+                            bgcolor="#000000",
+                            opacity=0.45,  # Ajuste entre 0.3 e 0.6
+                        ),
+                        
+                        # 3️⃣ Conteúdo (texto + botão)
+                        ft.Container(
+                            width=150,
+                            height=120,
+                            padding=10,
+                            content=ft.Column(
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                controls=[
+                                    ft.Text(
+                                        nome, 
+                                        size=14, 
+                                        weight=ft.FontWeight.BOLD,
+                                        color="#ffffff",
+                                        text_align=ft.TextAlign.CENTER,
+                                        max_lines=2,  # Permite quebra de linha
+                                    ),
+                                    ft.ElevatedButton(
+                                        "Analisar",
+                                        on_click=analisar_especifico,
+                                        bgcolor=cor_borda,
+                                        color="#ffffff",
+                                        style=ft.ButtonStyle(
+                                            shape=ft.RoundedRectangleBorder(radius=8)
+                                        )
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
             )
 
-            page.add(
+        grid = ft.GridView(
+            expand=True,
+            runs_count=3,
+            spacing=20,
+            run_spacing=20,
+            controls=[
+                card_item("pH", "assets/ph_analise.svg", "#3b82f6"),
+                card_item("Amônia", "assets/amonia_analise.svg", "#22c55e"),
+                card_item("Oxigênio", "assets/oxigenio_analise.svg", "#06b6d4"),
+                card_item("Nitrito", "assets/nitrito_analise.svg", "#a855f7"),
+                card_item("Amônia Crítica", "assets/amonia_critica_analise.svg", "#ef4444"),
+            ]
+        )
+
+        page.add(grid)
+        page.update()
+
+        page.add(
                 ft.Column(
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
