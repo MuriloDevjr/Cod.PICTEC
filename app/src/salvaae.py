@@ -174,42 +174,42 @@ def main(page: ft.Page):
 
             threading.Thread(target=rodar, daemon=True).start()
 
-        def pedir_temperatura(tipo):
-            campo_temp = ft.TextField(
-            label="Temperatura (°C)",
-            width=260
-            )
+        campo_temp = ft.TextField(label="Temperatura (°C)", width=260, keyboard_type=ft.KeyboardType.NUMBER)
 
-            def confirmar_temp(e):
-                temp_val = campo_temp.value
-                print(temp_val)
-                if not temp_val:
-                    return
+        def fechar_dlg(e):
+            dlg.open = False
+            page.update()
 
-                dlg.open = False
+        def confirmar_temp(e):
+            if not campo_temp.value:
+                campo_temp.error_text = "Digite a temperatura"
                 page.update()
-                executar_analise(tipo, temp_val)
-
-            def fechar(e=None):
-                dlg.open = False
-                page.update()
- 
-            print("to aq", campo_temp)
-            dlg = ft.AlertDialog(
-                modal = True,
-                title=ft.Text("Temperatura da Água"),
-                content=campo_temp,
-                open = True,
-                actions=[
-                    ft.TextButton("Cancelar", on_click=fechar),
-                    ft.Button("Confirmar", on_click=confirmar_temp),
-                ],
-                actions_alignment=ft.MainAxisAlignment.END,
-            )
-
-            page.show_dialog(dlg)
-            print("passou")
+                return
             
+            valor = campo_temp.value
+            dlg.open = False
+            page.update()
+            executar_analise(dlg.data, valor)
+
+        dlg = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Temperatura da Água"),
+            content=campo_temp,
+            actions=[
+                ft.TextButton("Cancelar", on_click=fechar_dlg),
+                ft.Button("Confirmar", on_click=confirmar_temp),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        page.dialog = dlg
+
+        def pedir_temperatura(tipo):
+            campo_temp.value = ""
+            campo_temp.error_text = None
+            dlg.data = tipo 
+            dlg.open = True
+            page.update()
 
         def ao_clicar_card(nome):
             nome_lower = nome.lower()
@@ -218,6 +218,7 @@ def main(page: ft.Page):
                 pedir_temperatura(nome_lower)
             else:
                 executar_analise(nome_lower)
+                page.update()
 
         def card(nome, imagem_url):
             return ft.Container(

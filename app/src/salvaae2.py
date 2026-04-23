@@ -182,24 +182,20 @@ def main(page: ft.Page):
 
             def confirmar_temp(e):
                 temp_val = campo_temp.value
-                print(temp_val)
                 if not temp_val:
                     return
 
-                dlg.open = False
+                page.close(dlg)
                 page.update()
                 executar_analise(tipo, temp_val)
 
             def fechar(e=None):
-                dlg.open = False
-                page.update()
- 
-            print("to aq", campo_temp)
+                page.close(dlg)
+
             dlg = ft.AlertDialog(
-                modal = True,
+                modal=True,  # IMPORTANTE
                 title=ft.Text("Temperatura da Água"),
                 content=campo_temp,
-                open = True,
                 actions=[
                     ft.TextButton("Cancelar", on_click=fechar),
                     ft.Button("Confirmar", on_click=confirmar_temp),
@@ -207,9 +203,7 @@ def main(page: ft.Page):
                 actions_alignment=ft.MainAxisAlignment.END,
             )
 
-            page.show_dialog(dlg)
-            print("passou")
-            
+            page.add(dlg)
 
         def ao_clicar_card(nome):
             nome_lower = nome.lower()
