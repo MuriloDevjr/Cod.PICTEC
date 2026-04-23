@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Data,Hora,Tipo,Resultado
 09/04/2026,14:24,pH,"pH detectado: 7,0"
 09/04/2026,14:26,pH,"pH detectado: 7,6"
@@ -51,3 +52,11 @@ Data,Hora,Tipo,Resultado
 23/04/2026,17:04,amonia,Analise o pH primeiro
 23/04/2026,17:04,ph,"pH: 7,6"
 23/04/2026,17:04,amonia,"Amonia: 6,50 | Temp: 25 | pH: 7,6 | Critica: 0.145"
+=======
+Data,Hora,Tipo,Resultado
+09/04/2026,14:24,pH,"pH detectado: 7,0"
+09/04/2026,14:26,pH,"pH detectado: 7,6"
+09/04/2026,14:33,pH,"pH detectado: 7,6"
+09/04/2026,14:43,pH,"pH detectado: 7,6"
+09/04/2026,14:44,pH,"pH detectado: 7,6"
+>>>>>>> 2d5a45decaaa3638239b01d7b6ea74e8ae7a85cd
