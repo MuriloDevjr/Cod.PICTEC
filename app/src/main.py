@@ -6,7 +6,7 @@ import threading
 
 
 def main(page: ft.Page):
-    page.title = "AquaScan"
+    page.title = "PisciQuali"
     page.theme_mode = ft.ThemeMode.DARK
     page.window_width = 420
     page.window_height = 760
@@ -17,7 +17,7 @@ def main(page: ft.Page):
 
     def salvar_historico(tipo, resultado):
         try:
-            df = pd.read_csv("historico.csv")
+            df = pd.read_csv("src/historico.csv")
         except:
             df = pd.DataFrame(columns=["Data", "Hora", "Tipo", "Resultado"])
 
@@ -31,11 +31,11 @@ def main(page: ft.Page):
         }
 
         df = pd.concat([df, pd.DataFrame([novo])], ignore_index=True)
-        df.to_csv("historico.csv", index=False)
+        df.to_csv("src/historico.csv", index=False)
 
     def carregar_historico():
         try:
-            df = pd.read_csv("historico.csv")
+            df = pd.read_csv("src/historico.csv")
             itens = []
 
             for _, row in df.iloc[::-1].iterrows():
@@ -59,8 +59,8 @@ def main(page: ft.Page):
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True,
                 controls=[
-                    ft.Image(src="drop.png", width=110, height=110),
-                    ft.Text("AquaScan", size=40, weight=ft.FontWeight.BOLD),
+                    ft.Image(src="src/drop.png", width=110, height=110),
+                    ft.Text("PisciQuali", size=40, weight=ft.FontWeight.BOLD),
                     ft.Text("Monitoramento Inteligente da Água"),
                     ft.Button(
                         "Entrar",
@@ -258,15 +258,15 @@ def main(page: ft.Page):
                     ft.Row(
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
-                            card("pH", "ph.png"),
-                            card("Amonia", "amonia.png")
+                            card("pH", "src/ph.png"),
+                            card("Amonia", "src/amonia.png")
                         ]
                     ),
                     ft.Row(
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
-                            card("Oxigenio", "oxigenio.png"),
-                            card("Nitrito", "nitrato (1).png")
+                            card("Oxigenio", "src/oxigenio.png"),
+                            card("Nitrito", "src/nitrito.png")
                         ]
                     )
                 ]

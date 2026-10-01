@@ -34,7 +34,7 @@ def cor_mais_frequente(imagem):
 
 
 def capturar_com_roi():
-    cam = cv2.VideoCapture(1)
+    cam = cv2.VideoCapture(0)
 
     if not cam.isOpened():
         return None
@@ -73,7 +73,7 @@ def analisarTipo(tipo, temp=None):
     if roi is None:
         return "Erro na captura"
 
-    pasta = tipo.lower()
+    pasta = f"src/{tipo.lower()}"
 
     if not os.path.exists(pasta):
         return f"Pasta '{pasta}' não encontrada"

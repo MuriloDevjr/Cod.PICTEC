@@ -16,3 +16,6 @@ Data,Hora,Tipo,Resultado
 09/04/2026,15:11,amonia,"Amonia analisada com pH 7,6"
 09/04/2026,15:15,ph,"pH detectado: 7,6"
 09/04/2026,15:15,amonia,Amonia analisada com pH 0.078
+24/09/2026,14:02,ph,Erro na captura
+24/09/2026,14:42,ph,Pasta 'ph' não encontrada
+24/09/2026,14:46,ph,Pasta 'ph' não encontrada
